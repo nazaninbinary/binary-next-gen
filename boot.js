@@ -65,6 +65,8 @@
         window.BinaryBoot.appId = 1006;
     } else if(window.electron) {
         window.BinaryBoot.appId = 1306;
+    } else if (/localhost:/g.test(window.location.href)) {
+        window.BinaryBoot.appId = 3588;
     } else {
         window.BinaryBoot.appId = 1001;
     }
