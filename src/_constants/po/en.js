@@ -1211,5 +1211,17 @@ export default {
     "Touch spot": [
         null,
         ""
+    ],
+    "This field is required": [
+        null,
+        ""
+    ],
+    "Should be a valid number": [
+        null,
+        ""
+    ],
+    "Should be between 0 and {max_balance}": [
+        null,
+        ""
     ]
 }
