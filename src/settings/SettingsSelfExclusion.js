@@ -7,46 +7,47 @@ import UpdateNotice from '../containers/UpdateNotice';
 import { api } from '../_data/LiveData';
 
 function validate(props, state, max_balance, max_turnover, max_losses, max_7day_turnover, max_7day_losses, max_30day_turnover, max_30day_losses, max_open_bets, session_duration_limit, timeout_until_date, timeout_until_time, exclude_until) {
-  // true means invalid, so our conditions got reversed
+  const timeout_until = dateToEpoch(new Date(timeout_until_date + ' ' + timeout_until_time));
   return {
-    max_balance_required: state.touched.max_balance && max_balance.length === 0,
+    max_balance_required: state.touched.max_balance && !max_balance,
 		max_balance: state.touched.max_balance && !(/^\d{0,20}$/).test(max_balance),
     max_balance_limit: state.touched.max_balance && max_balance > props.max_balance,
     max_balance_limit_text: props.max_balance,
-    max_turnover_required: state.touched.max_turnover && max_turnover.length === 0,
+    max_turnover_required: state.touched.max_turnover && !max_turnover,
     max_turnover: state.touched.max_turnover && !(/^\d{0,20}$/).test(max_turnover),
     max_turnover_limit: state.touched.max_turnover && max_turnover > props.max_turnover,
     max_turnover_limit_text: props.max_turnover,
-    max_losses_required: state.touched.max_losses && max_losses.length === 0,
+    max_losses_required: state.touched.max_losses && !max_losses,
     max_losses: state.touched.max_losses && !(/^\d{0,20}$/).test(max_losses),
     max_losses_limit: state.touched.max_losses && max_losses > props.max_losses,
     max_losses_limit_text: props.max_losses,
-    max_7day_turnover_required: state.touched.max_7day_turnover && max_7day_turnover.length === 0,
+    max_7day_turnover_required: state.touched.max_7day_turnover && !max_7day_turnover,
     max_7day_turnover: state.touched.max_7day_turnover && !(/^\d{0,20}$/).test(max_7day_turnover),
     max_7day_turnover_limit: state.touched.max_7day_turnover && max_7day_turnover > props.max_7day_turnover,
     max_7day_turnover_limit_text: props.max_7day_turnover,
-    max_7day_losses_required: state.touched.max_7day_losses && max_7day_losses.length === 0,
+    max_7day_losses_required: state.touched.max_7day_losses && !max_7day_losses,
     max_7day_losses: state.touched.max_7day_losses && !(/^\d{0,20}$/).test(max_7day_losses),
     max_7day_losses_limit: state.touched.max_7day_losses && max_7day_losses > props.max_7day_losses,
     max_7day_losses_limit_text: props.max_7day_losses,
-    max_30day_turnover_required: state.touched.max_30day_turnover && max_30day_turnover.length === 0,
+    max_30day_turnover_required: state.touched.max_30day_turnover && !max_30day_turnover,
     max_30day_turnover: state.touched.max_30day_turnover && !(/^\d{0,20}$/).test(max_30day_turnover),
     max_30day_turnover_limit: state.touched.max_30day_turnover && max_30day_turnover > props.max_30day_turnover,
     max_30day_turnover_limit_text: props.max_30day_turnover,
-    max_30day_losses_required: state.touched.max_30day_losses && max_30day_losses.length === 0,
+    max_30day_losses_required: state.touched.max_30day_losses && !max_30day_losses,
     max_30day_losses: state.touched.max_30day_losses && !(/^\d{0,20}$/).test(max_30day_losses),
     max_30day_losses_limit: state.touched.max_30day_losses && max_30day_losses > props.max_30day_losses,
     max_30day_losses_limit_text: props.max_30day_losses,
-    max_open_bets_required: state.touched.max_open_bets && max_open_bets.length === 0,
+    max_open_bets_required: state.touched.max_open_bets && !max_open_bets,
     max_open_bets: state.touched.max_open_bets && !(/^\d{0,4}$/).test(max_open_bets),
     max_open_bets_limit: state.touched.max_open_bets && max_open_bets > props.max_open_bets,
     max_open_bets_limit_text: props.max_open_bets,
-    session_duration_limit_required: state.touched.session_duration_limit && session_duration_limit.length === 0,
+    session_duration_limit_required: state.touched.session_duration_limit && !session_duration_limit,
     session_duration_limit: state.touched.session_duration_limit && !(/^\d{0,5}$/).test(session_duration_limit),
     session_duration_limit_limit: state.touched.session_duration_limit && session_duration_limit > props.session_duration_limit,
     session_duration_limit_limit_text: props.session_duration_limit,
-		timeout_until_date_limit: state.touched.timeout_until_date &&!(moment(timeout_until_date).isAfter(moment().subtract(1, 'days'), 'day') && moment(timeout_until_date).isBefore(moment().add(6, 'weeks'))),
+		timeout_until_date_limit: state.touched.timeout_until_date && !(moment(timeout_until_date).isAfter(moment().subtract(1, 'days'), 'day') && moment(timeout_until_date).isBefore(moment().add(6, 'weeks'))),
     timeout_until_time_required: !timeout_until_time,
+		timeout_until_time_limit: timeout_until < moment().valueOf() / 1000,
     exclude_until_limit: state.touched.exclude_until && !(moment(exclude_until).isAfter(moment().add(6, 'months')) && moment(exclude_until).isBefore(moment().add(5, 'years')))
   };
 }
@@ -92,12 +93,6 @@ export default class SettingsSelfExclusion extends PureComponent {
 		this.setState({ [e.target.id]: e.target.value,
       touched: { ...this.state.touched, [e.target.id]: true },
     });
-
-  // handleBlur = (field) => {
-  //   this.setState({
-  //
-  //   });
-  // }
 
     onFormSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
@@ -149,7 +144,7 @@ export default class SettingsSelfExclusion extends PureComponent {
 			max_30day_turnover, max_30day_losses, max_open_bets, session_duration_limit,
 			exclude_until, timeout_until_date, timeout_until_time, success, serverError } = this.state;
 		// const wrongExcludeUntillTime = isValidTime(timeout_until_time);
-    const errors = validate(this.props, this.state, this.state.max_balance, this.state.max_turnover, this.state.max_losses, this.state.max_7day_turnover, this.state.max_7day_losses, this.state.max_30day_turnover, this.state.max_30day_losses, this.state.max_open_bets, this.state.session_duration_limit, this.state.timeout_until_date, this.state.timeout_until_time, this.state.exclude_until);
+    const errors = validate(this.props, this.state, this.state.max_balance, this.state.max_turnover, this.state.max_losses, this.state.max_7day_turnover, this.state.max_7day_losses, this.state.max_30day_turnover, this.state.max_30day_losses, this.state.max_open_bets, this.state.session_duration_limit, this.state.timeout_until_date, this.state.timeout_until_time, this.state.exclude_untils);
 
     return (
 			<form className="settings-self-exclusion" onSubmit={this.onFormSubmit}>
@@ -289,6 +284,7 @@ export default class SettingsSelfExclusion extends PureComponent {
 					onChange={this.onEntryChange}
 				/>
 				<FieldError text="This field is required" show={timeout_until_date && errors.timeout_until_time_required} />
+				<FieldError text="This not past" show={timeout_until_date && errors.timeout_until_time_limit} />
 				<InputGroup
 					id="exclude_until"
 					label="Exclude me from the website until"
