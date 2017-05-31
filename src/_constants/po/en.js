@@ -1231,5 +1231,9 @@ export default {
     "Exclude time cannot be less than 6 months and more than 5 years.": [
         null,
         ""
+    ],
+    "Time out cannot be in the past.": [
+        null,
+        ""
     ]
 }

@@ -284,7 +284,7 @@ export default class SettingsSelfExclusion extends PureComponent {
 					onChange={this.onEntryChange}
 				/>
 				<FieldError text="This field is required" show={timeout_until_date && errors.timeout_until_time_required} />
-				<FieldError text="This not past" show={timeout_until_date && errors.timeout_until_time_limit} />
+				<FieldError text="Time out cannot be in the past." show={timeout_until_date && errors.timeout_until_time_limit} />
 				<InputGroup
 					id="exclude_until"
 					label="Exclude me from the website until"
