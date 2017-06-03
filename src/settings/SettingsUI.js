@@ -1,19 +1,23 @@
 import React, { PureComponent } from 'react';
+import { trackEvent } from 'binary-utils/lib/Analytics';
 import { M, Legend } from 'binary-components';
-import { actions } from '../_store';
+import storage from '../_store/storage';
 
 export default class SettingsUI extends PureComponent {
 
-	props: {
-		theme: boolean,
-		highContrast: boolean,
-	};
+	// props: {
+	// 	theme: boolean,
+	// };
 
-	onThemeChange = (e: SyntheticEvent) =>
-		actions.updateBoot('theme', e.target.value);
+	onThemeChange = (e: SyntheticEvent) => {
+    window.BinaryBoot.theme = e.target.value === 'light' ? 'dark' : 'light';
+		storage.setItem('boot', JSON.stringify(window.BinaryBoot));
+    trackEvent('Workspace', 'Theme', window.BinaryBoot.theme);
+    window.location.reload();
+	}
 
 	render() {
-		const { theme, highContrast } = this.props;
+		const theme = window.BinaryBoot.theme;
 
 		return (
 			<div className="settings-ui">
@@ -23,15 +27,16 @@ export default class SettingsUI extends PureComponent {
 						id="theme"
 						type="checkbox"
 						value={theme}
-						onChange={this.onPassword1Change}
+						checked={theme === 'dark'}
+						onChange={this.onThemeChange}
 					/>
-					<M m="Theme" />&nbsp;
+					<M m="Dark theme" />&nbsp;
 				</label>
 				<label htmlFor="contract">
 					<input
 						id="contrast"
-						type="checkbox"
-						value={theme}
+						type="radio"
+						// value={dark}
 						onChange={this.onPassword1Change}
 					/>
 					<M m="High Contrast" />&nbsp;
